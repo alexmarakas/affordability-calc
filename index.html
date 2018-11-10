@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Affordability Calculator</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  </head>
+  <style type="text/css">
+
+  	.calculator-alert {
+  		position:absolute;
+  		top:0;
+  		z-index:100;
+  		margin-bottom:5px;
+  		padding:10px 30px 10px 20px;
+  		font-size:0.9rem;
+  		display:none;
+  	}
+
+  	.form-control,
+    .input-group-addon,
+    .input-group > select {
+  		border: none;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+  		border-bottom: 1px solid #ddd;
+      -webkit-appearance: none;
+  	}
+  	#dp_in_dollars {
+  		color: rgba(0,0,0,.55);
+  		font-size: 0.9rem;
+  	}
+  	#dti-display {
+  		font-weight: bold;
+  	}
+  	#dti-display-current {
+  		font-weight: bold;
+  	}
+  	#affordability-display {
+  		font-size: 1.5rem;
+  		font-weight: bold;
+  	}
+  	#monthly-budget-display {
+  		font-weight:bold;
+  	}
+  	.input-group-addon {
+  		padding: 6px 6px;
+  		background: none;
+  		border: none;
+  		border-bottom: 1px solid rgba(0,0,0,.1);
+  	}
+  	input,
+  	select {
+  		padding-top: 0;
+  		padding-bottom: 0;
+  	}
+
+  	label {
+  		font-weight: 400;
+  	}
+
+  	h1 {
+  		font-weight: 600;
+  		font-size: 1.8em;
+  		color:#333333;
+  		margin-bottom: 25px;
+  	}
+  	h2 {
+  		font-weight:600;
+  		color: #555;
+  	}
+
+  	/* RANGE SLIDER STYLES */
+  	input[type=range] {
+  	  -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+  	  width: 100%; /* Specific width is required for Firefox. */
+  	  background: transparent; /* Otherwise white in Chrome */
+  	}
+
+  	input[type=range]::-webkit-slider-thumb {
+  	  -webkit-appearance: none;
+  	}
+
+  	input[type=range]:focus {
+  	  outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+  	}
+
+  	input[type=range]::-ms-track {
+  	  width: 100%;
+  	  cursor: pointer;
+
+  	  /* Hides the slider so custom styles can be added */
+  	  background: transparent;
+  	  border-color: transparent;
+  	  color: transparent;
+  	}
+  	/* Special styling for WebKit/Blink */
+  	input[type=range]::-webkit-slider-thumb {
+  	  -webkit-appearance: none;
+  	  border: 1px solid #000000;
+  	  height: 36px;
+  	  width: 16px;
+  	  border-radius: 3px;
+  	  background: #ffffff;
+  	  cursor: pointer;
+  	  margin-top: -14px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+  	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; /* Add cool effects to your sliders! */
+  	}
+
+  	/* All the same stuff for Firefox */
+  	input[type=range]::-moz-range-thumb {
+  	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  	  border: 1px solid #000000;
+  	  height: 36px;
+  	  width: 16px;
+  	  border-radius: 3px;
+  	  background: #ffffff;
+  	  cursor: pointer;
+  	}
+
+  	/* All the same stuff for IE */
+  	input[type=range]::-ms-thumb {
+  	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  	  border: 1px solid #000000;
+  	  height: 36px;
+  	  width: 16px;
+  	  border-radius: 3px;
+  	  background: #ffffff;
+  	  cursor: pointer;
+  	}
+  	input[type=range]::-webkit-slider-runnable-track {
+  	  width: 100%;
+  	  height: 8.4px;
+  	  cursor: pointer;
+  	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  	  background-image: linear-gradient(to right, #02a468 , #ffd500 , #c40033);
+  	  border-radius: 1.3px;
+  	  border: 0.2px solid #010101;
+  	}
+
+  	input[type=range]:focus::-webkit-slider-runnable-track {
+  	  /* background: #367ebd; */
+  	}
+
+  	input[type=range]::-moz-range-track {
+  	  width: 100%;
+  	  height: 8.4px;
+  	  cursor: pointer;
+  	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  	  background-image: linear-gradient(to right, #28a745 , #ffc107 , #dc3545);
+  	  border-radius: 1.3px;
+  	  border: 0.2px solid #010101;
+  	}
+
+  	input[type=range]::-ms-track {
+  	  width: 100%;
+  	  height: 8.4px;
+  	  cursor: pointer;
+  	  background-image: linear-gradient(to right, #28a745 , #ffc107 , #dc3545);
+  	  border-color: transparent;
+  	  border-width: 16px 0;
+  	  color: transparent;
+  	}
+  	input[type=range]::-ms-fill-lower {
+  	  background-image: linear-gradient(to right, #28a745 , #ffc107 , #dc3545);
+  	  border: 0.2px solid #010101;
+  	  border-radius: 2.6px;
+  	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  	}
+  	input[type=range]:focus::-ms-fill-lower {
+  	  background-image: linear-gradient(to right, #28a745 , #ffc107 , #dc3545);
+  	}
+  	input[type=range]::-ms-fill-upper {
+  	  background-image: linear-gradient(to right, #28a745 , #ffc107 , #dc3545);
+  	  border: 0.2px solid #010101;
+  	  border-radius: 2.6px;
+  	  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  	}
+  	input[type=range]:focus::-ms-fill-upper {
+  	  background-image: linear-gradient(to right, #28a745 , #ffc107 , #dc3545);
+  	}
+
+  	#loan_state,
+  	#annual_income,
+  	#monthly_expenses,
+  	#tax_filing,
+  	#down_payment,
+  	#loan_term,
+  	#loan_rate {
+  		margin: 4px 0;
+  	}
+
+  	#budget {
+  		transform:translateY(-165px);
+  		font-size:1.1rem;
+  	}
+  	.danger-highlight {
+  		border-bottom: 2px solid #ef4252;
+  		color: #ef4252;
+  		background-color: rgba(239,66,82,0.3);
+  	}
+    p {
+      color: rgba(0,0,0,.55);
+      line-height: 1.8;
+    }
+    input {
+      box-shadow: none !important;
+      border-radius: none !important;
+    }
+  </style>
+
+  <body>
+
+  <div class="container" style="margin-top:50px;margin-bottom:100px;">
+  	<!-- HEADING -->
+  	<div class="row" style="margin-bottom:30px;">
+  		<div class="col-md-12 text-center">
+  			<h1>AFFORDABILITY CALCULATOR</h1>
+  			<p style="font-size:1.5rem;">Enter your information into this calculator to determine how much house you can afford.</p>
+  		</div>
+  	</div>
+
+  	<!-- USER INPUTS -->
+  	<div class="row">
+
+  		<div class="col-md-4">
+  			<form id="affordability_form">
+
+  				<!-- LOAN STATE -->
+  				<div id="loan_state">
+  					<label for="loan_state_entry">State</label>
+  					<select name="loan_state_entry" id="loan_state_entry" class="form-control" data-key="state">
+  						<option value="AL">Alabama</option>
+  						<option value="AK">Alaska</option>
+  						<option value="AZ">Arizona</option>
+  						<option value="AR">Arkansas</option>
+  						<option value="CA" selected="">California</option>
+  						<option value="CO">Colorado</option>
+  						<option value="CT">Connecticut</option>
+  						<option value="DE">Delaware</option>
+  						<option value="FL">Florida</option>
+  						<option value="GA">Georgia</option>
+  						<option value="HI">Hawaii</option>
+  						<option value="ID">Idaho</option>
+  						<option value="IL">Illinois</option>
+  						<option value="IN">Indiana</option>
+  						<option value="IA">Iowa</option>
+  						<option value="KS">Kansas</option>
+  						<option value="KY">Kentucky</option>
+  						<option value="LA">Louisiana</option>
+  						<option value="ME">Maine</option>
+  						<option value="MD">Maryland</option>
+  						<option value="MA">Massachusetts</option>
+  						<option value="MI">Michigan</option>
+  						<option value="MN">Minnesota</option>
+  						<option value="MS">Mississippi</option>
+  						<option value="MO">Missouri</option>
+  						<option value="MT">Montana</option>
+  						<option value="NE">Nebraska</option>
+  						<option value="NV">Nevada</option>
+  						<option value="NH">New Hampshire</option>
+  						<option value="NJ">New Jersey</option>
+  						<option value="NM">New Mexico</option>
+  						<option value="NY">New York</option>
+  						<option value="NC">North Carolina</option>
+  						<option value="ND">North Dakota</option>
+  						<option value="OH">Ohio</option>
+  						<option value="OK">Oklahoma</option>
+  						<option value="OR">Oregon</option>
+  						<option value="PA">Pennsylvania</option>
+  						<option value="RI">Rhode Island</option>
+  						<option value="SC">South Carolina</option>
+  						<option value="SD">South Dakota</option>
+  						<option value="TN">Tennessee</option>
+  						<option value="TX">Texas</option>
+  						<option value="UT">Utah</option>
+  						<option value="VT">Vermont</option>
+  						<option value="VA">Virginia</option>
+  						<option value="WA">Washington</option>
+  						<option value="WV">West Virginia</option>
+  						<option value="WI">Wisconsin</option>
+  						<option value="WY">Wyoming</option>
+  					</select>
+  				</div>
+  				<!-- ANNUAL INCOME -->
+  				<div id="annual_income">
+  					<label for="loan_income_entry">Annual Income</label>
+  					<div class="input-group">
+  						<span class="input-group-addon">$</span>
+  						<input type="text" class="form-control" name="loan_income_entry" id="loan_income_entry" data-key="annual_income" data-format="currency" value="65000" maxlength="11" size="10">
+  					</div>
+
+  				</div>
+  				<!-- MONTHLY EXPENSES -->
+  				<div id="monthly_expenses">
+  					<label for="loan_expenses_entry">Monthly Expenses</label>
+  					<div class="input-group">
+  						<span class="input-group-addon">$</span>
+  						<input type="text" class="form-control" name="loan_expenses_entry" id="loan_expenses_entry" data-key="monthly_expenses" data-format="currency" value="500" maxlength="10" size="10">
+  					</div>
+  				</div>
+  				<!-- TAX FILING STATUS -->
+  				<div id="tax_filing">
+  					<label for="tax_file_type">Tax Filing Status</label>
+  					<select data-key="tax_file_type" name="tax_file_type" id="tax_file_type" class="form-control">
+  						<option value="single" selected="selected">Single Status</option>
+  						<option value="head">Head of Household</option>
+  						<option value="married_jointly">Married filing Jointly</option>
+  						<option value="married_separately">Married filing Separately</option>
+  					</select>
+  				</div>
+  				<!-- DOWN PAYMENT -->
+  				<div id="down_payment">
+  					<label for="down_payment_entry">Down Payment <span id="dp_in_dollars">($0)</span></label>
+  					<div class="input-group">
+  				       	<select data-key="down_percent" name="down_payment_entry" id="down_payment_entry" class="form-control">
+  							<option value="0" selected="">0</option>
+  							<option value="3.5">3.5</option>
+  							<option value="5">5</option>
+  							<option value="10">10</option>
+  							<option value="20">20</option>
+  							<option value="30">30</option>
+  							<option value="40">40</option>
+  							<option value="50">50</option>
+  				        </select>
+  				        <span class="input-group-addon">%</span>
+  				    </div>
+  				</div>
+  				<!-- LOAN TERM -->
+  				<div id="loan_term">
+  					<label for="term_in_years">Loan Term</label>
+  					<select data-key="term_in_years" id="term_in_years" name="term_in_years" class="form-control">
+  						<option value="15">15 years</option>
+  						<option value="30" selected="selected">30 years</option>
+  						<option value="40">40 years</option>
+  					</select>
+  				</div>
+  				<!-- LOAN RATE -->
+  				<div id="loan_rate">
+  					<label for="loan_rate_entry&#39;">Mortgage Rate</label>
+  					<div class="input-group">
+  						<input data-key="mortgage_rate" type="number" class="form-control" id="loan_rate_entry" name="loan_rate_entry" value="3.75" maxlength="5" step="0.05" size="10">
+  						<span class="input-group-addon">%</span>
+  				    </div>
+  				</div>
+  			</form>
+  		</div>
+  		<div class="col-md-8">
+  			<!-- AFFORDABILITY -->
+  			<div class="row">
+  				<div class="col-xs-12 text-center">
+  					<p style="margin:0;">You can afford a house that costs</p>
+  				</div>
+  				<div class="row">
+  					<div class="col-md-5 col-xs-4"></div>
+  					<div class="col-md-2 col-xs-4 text-center" id="affordability-container">
+  						<p id="affordability-display">$251,591</p>
+  					</div>
+  					<!-- DTI TO HIGH -->
+  					<div class="col-md-5 col-xs-4">
+  						<p id="dti-to-high" class="calculator-alert alert alert-danger">Current DTI exceeds desired DTI.</p>
+  						<p id="expenseOverIncome" class="calculator-alert alert alert-danger">Your expenses exceed your income.</p>
+  					</div>
+  				</div>
+  			</div>
+  			<!-- GOOGLE DONUT CHART -->
+  			<div id="donutchart" style="width:100%; height:300px;"></div>
+  			<!-- MONTHLY BUDGET CENTERED IN GOOGLE DONUT CHART -->
+  			<p id="budget" class="text-center" style="">Monthly Budget<br><span id="monthly-budget-display">$5,417</span></p>
+  			<!-- DESIRED DTI  & SLIDER -->
+  			<div id="desired_dti" class="row" style="margin-top:20px;">
+  				<div class="col-xs-2" style="margin-top: 39px;">
+  					<p>Save Money</p>
+  				</div>
+  				<div class="col-xs-8 text-center" style="">
+  					<div style="margin-bottom:20px;">
+  						<p>Your <strong>desired</strong> <a style="color:#337ab7;" href="https://www.investopedia.com/terms/d/dti.asp">debt-to-income</a> ratio is <span id="dti-display">35</span>% (current <span id="dti-display-current">9.2</span>%)</p>
+  					</div>
+  					<input form="affordability_form" data-key="desired_dti" type="range" id="desired_dti_entry" name="desired_dti_entry" min="15" max="41" value="33" step="1">
+  				</div>
+  				<div class="col-xs-2" style="margin-top: 39px;">
+  					<p>Spend Money</p>
+  				</div>
+  			</div>
+
+  	</div>
+
+  </div>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="calc.js"></script>
+  <!--Load the AJAX API-->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+  	// avoid back-forward cache issues with currency inputs
+  	$('form').trigger("reset");
+
+  	// object of current loan numbers
+  	var FormData = {
+  		state: $('#loan_state_entry').val(),
+  		annual_income: parseInt($('#loan_income_entry').val(),10),
+  		monthly_expenses: parseInt($('#loan_expenses_entry').val(),10),
+  		tax_file_type: $('#tax_file_type').val(),
+  		down_percent: parseFloat($('#down_payment_entry').val(),10),
+  		term_in_years: parseInt($('#term_in_years').val(),10),
+  		mortgage_rate: parseFloat($('#loan_rate_entry').val(),10),
+  		desired_dti: parseInt($('#desired_dti_entry').val(),10),
+
+  		updateData: function(key,value){
+  			this[key] = value;
+  		}
+  	}
+
+
+  	// add initial dti to view
+  	$('#dti-display').html(FormData.desired_dti);
+
+  	// add initial current dti to view
+  	$('#dti-display-current').html((FormData.monthly_expenses / (FormData.annual_income/12) * 100).toFixed(1));
+
+  	// create inital calculator and create initial google chart
+  	var calculator = LoanCalculator.createHomeAffordabiltyCalculator(FormData);
+  	var results = calculator.getResults();
+
+  	// add commas after calculator is built
+  	$('#loan_income_entry').val(FormData.annual_income.toLocaleString());
+  	$('#loan_expenses_entry').val(FormData.monthly_expenses.toLocaleString());
+
+  	// initial affordability
+  	$('#affordability-display').html('$' + getHomeAffordability(results).toLocaleString());
+
+  	// initial down payment as dollar in display
+  	$('#dp_in_dollars').html('($' + Math.round((FormData.down_percent * 0.01 * getHomeAffordability(results))).toLocaleString() + ')');
+
+  	// initial budget
+  	$('#monthly-budget-display').html('$' + (results.monthly_breakdown.monthly_budget).toLocaleString());
+
+
+  	// Load the Visualization API and the corechart package.
+    google.charts.load('current', {'packages':['corechart']});
+  	// Set a callback to run when the Google Visualization API is loaded / Load Visualization
+  	google.charts.setOnLoadCallback(function() { drawChart(getChartData(results)); });
+
+    // redraw calculator on resize
+    $(window).on('resize',function(){
+      google.charts.setOnLoadCallback(function() { drawChart(getChartData(results)); });
+    });
+
+  	// on change of input update that key value pair
+  	$('input, select',).on('change',function(e){
+
+  		updateFormData($(e.target));
+
+  		var calculator = LoanCalculator.createHomeAffordabiltyCalculator(FormData);
+  		var results = calculator.getResults();
+
+  		// if expenses are greater than income
+  		if(results.monthly_breakdown == 0){
+  			$('#monthly-budget-display').html('$0');
+  			$('#expenseOverIncome').fadeIn();
+  		} else {
+  			$('#monthly-budget-display').html('$' + (results.monthly_breakdown.monthly_budget).toLocaleString());
+  			$('#expenseOverIncome').fadeOut();
+  		}
+
+  		// if current dti is greater than desired dti
+  		if(getHomeAffordability(results) == 0 && results.monthly_breakdown != 0){
+  			$('#dti-to-high').fadeIn();
+  		} else {
+  			$('#dti-to-high').fadeOut();
+  		}
+
+  		// update current dti to view
+  		$('#dti-display-current').html((FormData.monthly_expenses / (FormData.annual_income/12) * 100).toFixed(1));
+
+  		// update affordability
+  		$('#affordability-display').html('$' + getHomeAffordability(results).toLocaleString());
+
+  		// show down payment as dollar in display
+  		$('#dp_in_dollars').html('($' + Math.round((FormData.down_percent * 0.01 * getHomeAffordability(results))).toLocaleString() + ')');
+
+
+  		// draw chart
+  		google.charts.setOnLoadCallback(function() { drawChart(getChartData(results)); });
+
+  	});
+
+  	// for a an immediate change on input type = range
+  	$('input[type=range]').on('input', function(e){
+
+  		updateFormData($(e.target));
+
+  		// update dti in view
+  		$('#dti-display').html(FormData.desired_dti);
+
+  		var calculator = LoanCalculator.createHomeAffordabiltyCalculator(FormData);
+  		var results = calculator.getResults();
+
+  		// update affordability
+  		$('#affordability-display').html('$' + getHomeAffordability(results).toLocaleString());
+
+  		// show down payment as dollar in display
+  		$('#dp_in_dollars').html('($' + Math.round((FormData.down_percent * 0.01 * getHomeAffordability(results))).toLocaleString() + ')');
+
+  		// if current dti is greater than desired dti
+  		if(getHomeAffordability(results) == 0){
+  			$('#dti-to-high').fadeIn();
+  		} else {
+  			$('#dti-to-high').fadeOut();
+  		}
+
+  		// draw chart
+  		google.charts.setOnLoadCallback(function() { drawChart(getChartData(results)); });
+
+  	});
+
+  	// Add commas to currency
+  	$('input[data-format=currency]').on('keyup', function(){
+  		// Sanitize value
+  		var i = $(this).val().replace(/[\D\s\._\-]+/g, "");
+  		// Add commas
+  		var n = Number(i).toLocaleString();
+  		// Use new value
+  		$(this).val(n);
+  	});
+
+  	function updateFormData(targetInput){
+  		var key = targetInput.data('key');
+  		// sanitize currency values
+  		if(targetInput.data('format') === 'currency'){
+  			var value = targetInput.val().replace(/[\D\s\._\-]+/g, ""); // store and sanitize value
+  		} else {
+  			var value = targetInput.val()
+  		}
+  		// ensure numbers are numbers
+  		if(!isNaN(value)){
+  			value = Number(value);
+  		}
+  		// update form data object
+  		FormData.updateData(key, value);
+  	}
+
+
+  	function getHomeAffordability(results){
+  		var affordability = results.principal_investment;
+  		if(affordability < 0){
+  			affordability = 0;
+  		}
+
+  		return affordability;
+  	}
+
+
+  	// parses results and results arrays within an aray (for google charts)
+  	function getChartData(results){
+  		var mortgagePayment = parseInt(results.monthly_breakdown.monthly_mortgage_payment,10);
+  		if(mortgagePayment < 0){
+  			mortgagePayment = 0;
+  		}
+  		var leftOverMoney = parseInt(results.monthly_breakdown.monthly_free_money,10);
+  		var incomeTax = parseInt(results.monthly_breakdown.monthly_income_tax,10);
+  		var propertyTax = parseInt(results.monthly_breakdown.monthly_property_tax,10);
+  		if(propertyTax < 0){
+  			propertyTax = 0;
+  		}
+  		var taxes = incomeTax + propertyTax;
+  		var monthlyExp = parseInt(results.monthly_breakdown.monthly_expenses,10);
+
+  		var chartData = [
+  			['Category', 'Dollars per Month'],
+  			['Mortgage Payment',mortgagePayment],
+  			['Left Over',leftOverMoney],
+  			['Taxes',taxes],
+  			['Expenses',monthlyExp],
+  		];
+
+  		return chartData;
+  	}
+
+  	function drawChart(chartdata) {
+
+  		var data = google.visualization.arrayToDataTable(chartdata);
+
+  		var options = {
+  			pieHole: 0.5,
+  			backgroundColor: '#ffffff',
+  			'chartArea': {'width': '100%', 'height': '80%'},
+  			'legend': {'position': 'bottom'},
+  			colors: ['#0987bf', '#02a468', '#ffd500', '#c40033',],
+  			pieSliceText: 'value'
+  		};
+
+  		var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+
+  		// add formatter and format column 1 of data table to be currency
+  		var formatter = new google.visualization.NumberFormat({prefix: '$',pattern:'#,###'});
+  		formatter.format(data, 1);
+
+  		chart.draw(data, options);
+  	}
+
+  </script>
+  </body>
+</html>
